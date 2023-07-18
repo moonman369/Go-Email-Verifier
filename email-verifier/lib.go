@@ -7,9 +7,19 @@ import (
 	"strings"
 )
 
-func CheckDomain(domain string) {
-	var hasMX, hasSPF, hasDMARC bool
-	var spfRecord, dmarcRecord string
+type VerificationResult struct {
+	Domain      string `json:"domain"`
+	HasMX       bool   `json:"hasMX"`
+	HasSPF      bool   `json:"hasSPF"`
+	SPFRecord   string `json:"spfRecord"`
+	HasDMARC    bool   `json:"hasDMARC"`
+	DMARCRecord string `json:"dmarcRecord"`
+}
+
+func CheckDomain(domain string) VerificationResult {
+	var ver VerificationResult
+
+	ver.Domain = domain
 
 	// Checking MX Records
 	mxRecords, err := net.LookupMX(domain)
@@ -17,7 +27,7 @@ func CheckDomain(domain string) {
 		log.Printf("Error: %v\n", err)
 	}
 	if len(mxRecords) > 0 {
-		hasMX = true
+		ver.HasMX = true
 	}
 
 	// Checking SPF Records
@@ -27,8 +37,8 @@ func CheckDomain(domain string) {
 	}
 	for _, record := range txtRecords {
 		if strings.HasPrefix(record, "v=spf1") {
-			hasSPF = true
-			spfRecord = record
+			ver.HasSPF = true
+			ver.SPFRecord = record
 			break
 		}
 	}
@@ -39,17 +49,19 @@ func CheckDomain(domain string) {
 	}
 	for _, record := range dmarcRecords {
 		if strings.HasPrefix(record, "v=DMARC1") {
-			hasDMARC = true
-			dmarcRecord = record
+			ver.HasDMARC = true
+			ver.DMARCRecord = record
 			break
 		}
 	}
 
-	fmt.Printf("Domain:\t\t%v\n", domain)
-	fmt.Printf("Has MX:\t\t%v\n", hasMX)
-	fmt.Printf("Has SPF:\t%v\n", hasSPF)
-	fmt.Printf("SPF Record:\t%v\n", spfRecord)
-	fmt.Printf("Has DMARC:\t%v\n", hasDMARC)
-	fmt.Printf("DMARC Record:\t%v\n", dmarcRecord)
+	fmt.Printf("Domain:\t\t%v\n", ver.Domain)
+	fmt.Printf("Has MX:\t\t%v\n", ver.HasMX)
+	fmt.Printf("Has SPF:\t%v\n", ver.HasSPF)
+	fmt.Printf("SPF Record:\t%v\n", ver.SPFRecord)
+	fmt.Printf("Has DMARC:\t%v\n", ver.HasDMARC)
+	fmt.Printf("DMARC Record:\t%v\n", ver.DMARCRecord)
 	fmt.Println()
+
+	return ver
 }
