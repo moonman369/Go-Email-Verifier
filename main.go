@@ -8,6 +8,7 @@ import (
 
 	"github.com/gorilla/mux"
 	emailverifier "github.com/moonman369/Go-Email-Verifier/email-verifier"
+	"github.com/rs/cors"
 )
 
 type Domain struct {
@@ -42,8 +43,15 @@ func main() {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/verify", verifyDomain).Methods("POST")
+
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:3000", "https://devfoliomoonman369.netlify.app/"},
+		AllowCredentials: true,
+	})
+
+	handler := c.Handler(r)
 	fmt.Println("Starting server at port 8080")
-	if err := http.ListenAndServe("0.0.0.0:8080", r); err != nil {
+	if err := http.ListenAndServe(":8080", handler); err != nil {
 		log.Fatal(err)
 	}
 }
