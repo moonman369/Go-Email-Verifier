@@ -14,15 +14,6 @@ type Domain struct {
 	Path string `json:"path"`
 }
 
-// type VerificationResult struct {
-// 	Domain      *Domain `json:"domain"`
-// 	HasMX       bool    `json:"hasMX"`
-// 	HasSPF      bool    `json:"hasSPF"`
-// 	SPFRecord   string  `json:"spfRecord"`
-// 	HasDMARC    bool    `json:"hasDMARC"`
-// 	DMARCRecord string  `json:"dmarcRecord"`
-// }
-
 func verifyDomain(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var domain Domain
