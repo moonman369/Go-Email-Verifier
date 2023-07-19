@@ -45,7 +45,7 @@ func main() {
 	r.HandleFunc("/verify", verifyDomain).Methods("POST")
 
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000", "https://devfoliomoonman369.netlify.app/"},
+		AllowedOrigins:   []string{"http://localhost:3000", "https://devfoliomoonman369.netlify.app"},
 		AllowCredentials: true,
 	})
 
