@@ -27,6 +27,18 @@ func verifyDomain(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(res)
 }
 
+func helloHandler(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/" {
+		http.Error(w, "404 not Found", http.StatusNotFound)
+		return
+	}
+	if r.Method != "GET" {
+		http.Error(w, "Method is not allowed by the server", http.StatusMethodNotAllowed)
+		return
+	}
+	fmt.Fprint(w, "<html><body><h1>Welcome To Go Email Verifier<h1><br><br></body></html>")
+}
+
 func main() {
 	// NATIVE APPLICATION CODE
 	// scanner := bufio.NewScanner(os.Stdin)
@@ -43,6 +55,7 @@ func main() {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/verify", verifyDomain).Methods("POST")
+	r.HandleFunc("/", helloHandler)
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:3000", "https://devfoliomoonman369.netlify.app"},
