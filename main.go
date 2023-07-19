@@ -11,14 +11,18 @@ import (
 )
 
 type Domain struct {
-	Path string `json:"path"`
+	Name string `json:"name"`
 }
 
 func verifyDomain(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var domain Domain
 	_ = json.NewDecoder(r.Body).Decode(&domain)
-	res := emailverifier.CheckDomain(domain.Path)
+	if domain.Name == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	res := emailverifier.CheckDomain(domain.Name)
 	json.NewEncoder(w).Encode(res)
 }
 
