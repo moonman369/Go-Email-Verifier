@@ -16,7 +16,7 @@ type Domain struct {
 }
 
 func verifyDomain(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json, text/html, text/css")
 	var domain Domain
 	_ = json.NewDecoder(r.Body).Decode(&domain)
 	if domain.Name == "" {
@@ -25,18 +25,6 @@ func verifyDomain(w http.ResponseWriter, r *http.Request) {
 	}
 	res := emailverifier.CheckDomain(domain.Name)
 	json.NewEncoder(w).Encode(res)
-}
-
-func helloHandler(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
-		http.Error(w, "404 not Found", http.StatusNotFound)
-		return
-	}
-	if r.Method != "GET" {
-		http.Error(w, "Method is not allowed by the server", http.StatusMethodNotAllowed)
-		return
-	}
-	fmt.Fprint(w, "<html><body><h1>Welcome To Go Email Verifier<h1><br><br></body></html>")
 }
 
 func main() {
@@ -55,7 +43,7 @@ func main() {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/verify", verifyDomain).Methods("POST")
-	r.HandleFunc("/", helloHandler)
+	r.Handle("/", http.FileServer(http.Dir("./static")))
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:3000", "https://devfoliomoonman369.netlify.app"},
